@@ -15,6 +15,55 @@ impl Row {
             self.elements.push(init_type)
         }    
     }
+    fn ising_calc(self, x: i32, y: i32, beta: f32) -> f64{
+        // check neighbors and run Ising calculation
+        let mut num_pos: i32 = 0;
+        let mut num_neg: i32 = 0;
+        
+        // CHECK HORIZONTAL NEIGHBORS
+        if y>0 {
+            // if grid[x][y-1] == POS
+            if self.elements[(x*y-1) as usize] == true {
+                num_pos += 1;
+            }
+            else {
+                num_neg += 1;
+            }
+        }
+        if y < self.elements.len().try_into().unwrap() {
+            // if grid[x][y+1] == POS
+            if self.elements[(x*y+1) as usize] == true {
+                num_pos += 1;
+            }
+            else {
+                num_neg += 1;
+            }
+        }
+        // CHECK VERTICAL NEIGHBORS
+        if x>0 {
+            // if grid[x-1][y] == POS
+            if self.elements[((x-1)*y) as usize] == true {
+                num_pos += 1;
+            }
+            else {
+                num_neg += 1;
+            }
+        }
+        if x < self.elements.len().try_into().unwrap() {
+            // if grid[x+1][y] == POS
+            if self.elements[((x+1)*y) as usize] == true {
+                num_pos += 1;
+            }
+            else {
+                num_neg += 1;
+            }
+        }
+
+        let one = 1.0_f64;  // e^1
+        let e = one.exp();
+
+        return e.powf((beta * num_pos as f32).into())/(e.powf((beta * num_pos as f32).into()) + e.powf((beta * num_neg as f32).into()));
+    }
 }
 
 fn main() {
