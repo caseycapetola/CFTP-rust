@@ -15,6 +15,7 @@ impl Row {
             self.elements.push(init_type)
         }    
     }
+
     fn ising_calc(self, x: i32, y: i32, beta: f32) -> f64{
         // check neighbors and run Ising calculation
         let mut num_pos: i32 = 0;
@@ -64,12 +65,65 @@ impl Row {
 
         return e.powf((beta * num_pos as f32).into())/(e.powf((beta * num_pos as f32).into()) + e.powf((beta * num_neg as f32).into()));
     }
+
+    fn couple_step(&mut self, mut grid: Row, flag: f64, calc1: f64, calc2: f64, x: i32, y: i32) -> i32 {
+        if flag <= calc1 && flag <= calc2 {
+            if self.elements[(x*y) as usize] == grid.elements[(x*y) as usize] {
+                self.elements[(x*y) as usize] = true;
+                grid.elements[(x*y) as usize] = true;
+                return 0;
+            }
+            else {
+                self.elements[(x*y) as usize] = true;
+                grid.elements[(x*y) as usize] = true;
+                return -1;
+            }
+        }
+        else if flag > calc1 && flag > calc2 {
+            if self.elements[(x*y) as usize] == grid.elements[(x*y) as usize] {
+                self.elements[(x*y) as usize] = false;
+                grid.elements[(x*y) as usize] = false;
+                return 0;
+            }
+            else {
+                self.elements[(x*y) as usize] = false;
+                grid.elements[(x*y) as usize] = false;
+                return -1;
+            }
+        }
+        else if flag <= calc1 && flag > calc2 {
+            if self.elements[(x*y) as usize] == grid.elements[(x*y) as usize] {
+                self.elements[(x*y) as usize] = true;
+                grid.elements[(x*y) as usize] = false;
+                return 1;
+            }
+            else {
+                self.elements[(x*y) as usize] = true;
+                grid.elements[(x*y) as usize] = false;
+                return 0;
+            }
+        }
+        else {
+            if self.elements[(x*y) as usize] == grid.elements[(x*y) as usize] {
+                self.elements[(x*y) as usize] = false;
+                grid.elements[(x*y) as usize] = true;
+                return 1;
+            }
+            else {
+                self.elements[(x*y) as usize] = false;
+                grid.elements[(x*y) as usize] = true;
+                return 0;
+            }
+        }
+    }
 }
 
 fn main() {
     let mut rng = rand::thread_rng();
     let arr_size: i32 = 10;
     let beta: f32 = 0.5;
+    let mut x: i32;
+    let mut y: i32;
 
     let mut pos_grid: Row = Row{
         elements: Vec::new()
@@ -84,9 +138,12 @@ fn main() {
     neg_grid.init_grid(false, arr_size*arr_size);
     let mut diff: i32 = arr_size*arr_size;
 
-    let mut rand_num: f32;
+    let mut rand_num: f64;
     while diff > 0 {
-        rand_num = rng.gen::<f32>();
+        rand_num = rng.gen::<f64>();
+        x = rng.gen_range(0..(arr_size*arr_size));
+        y = rng.gen_range(0..(arr_size*arr_size));
+        diff += pos_grid.couple_step(neg_grid, rand_num, pos_grid.ising_calc(x, y, beta), neg_grid.ising_calc(x, y, beta), x, y);
     }
 
 
