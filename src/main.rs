@@ -16,7 +16,7 @@ impl Row {
         }    
     }
 
-    fn ising_calc(self, x: i32, y: i32, beta: f32) -> f64{
+    fn ising_calc(&mut self, x: i32, y: i32, beta: f32) -> f64{
         // check neighbors and run Ising calculation
         let mut num_pos: i32 = 0;
         let mut num_neg: i32 = 0;
@@ -66,56 +66,6 @@ impl Row {
         return e.powf((beta * num_pos as f32).into())/(e.powf((beta * num_pos as f32).into()) + e.powf((beta * num_neg as f32).into()));
     }
 
-    fn couple_step(&mut self, mut grid: Row, flag: f64, calc1: f64, calc2: f64, x: i32, y: i32) -> i32 {
-        if flag <= calc1 && flag <= calc2 {
-            if self.elements[(x*y) as usize] == grid.elements[(x*y) as usize] {
-                self.elements[(x*y) as usize] = true;
-                grid.elements[(x*y) as usize] = true;
-                return 0;
-            }
-            else {
-                self.elements[(x*y) as usize] = true;
-                grid.elements[(x*y) as usize] = true;
-                return -1;
-            }
-        }
-        else if flag > calc1 && flag > calc2 {
-            if self.elements[(x*y) as usize] == grid.elements[(x*y) as usize] {
-                self.elements[(x*y) as usize] = false;
-                grid.elements[(x*y) as usize] = false;
-                return 0;
-            }
-            else {
-                self.elements[(x*y) as usize] = false;
-                grid.elements[(x*y) as usize] = false;
-                return -1;
-            }
-        }
-        else if flag <= calc1 && flag > calc2 {
-            if self.elements[(x*y) as usize] == grid.elements[(x*y) as usize] {
-                self.elements[(x*y) as usize] = true;
-                grid.elements[(x*y) as usize] = false;
-                return 1;
-            }
-            else {
-                self.elements[(x*y) as usize] = true;
-                grid.elements[(x*y) as usize] = false;
-                return 0;
-            }
-        }
-        else {
-            if self.elements[(x*y) as usize] == grid.elements[(x*y) as usize] {
-                self.elements[(x*y) as usize] = false;
-                grid.elements[(x*y) as usize] = true;
-                return 1;
-            }
-            else {
-                self.elements[(x*y) as usize] = false;
-                grid.elements[(x*y) as usize] = true;
-                return 0;
-            }
-        }
-    }
 }
 
 fn main() {
@@ -130,7 +80,7 @@ fn main() {
     };
 
     pos_grid.init_grid(true, arr_size*arr_size);
-    println!("{:#?}", pos_grid.elements);
+    // println!("{:#?}", pos_grid.elements);
 
     let mut neg_grid: Row = Row {
         elements: Vec::new()
@@ -138,13 +88,68 @@ fn main() {
     neg_grid.init_grid(false, arr_size*arr_size);
     let mut diff: i32 = arr_size*arr_size;
 
-    let mut rand_num: f64;
+    let mut flag: f64;
+    let mut calc1: f64;
+    let mut calc2: f64;
+    let mut num_steps: i32 = 0;
     while diff > 0 {
-        rand_num = rng.gen::<f64>();
-        x = rng.gen_range(0..(arr_size*arr_size));
-        y = rng.gen_range(0..(arr_size*arr_size));
-        diff += pos_grid.couple_step(neg_grid, rand_num, pos_grid.ising_calc(x, y, beta), neg_grid.ising_calc(x, y, beta), x, y);
+        flag = rng.gen::<f64>();
+        x = rng.gen_range(0..(arr_size));
+        y = rng.gen_range(0..(arr_size));
+
+        println!("x: {}; y: {}", x, y);
+
+        calc1 = pos_grid.ising_calc(x, y, beta);
+        calc2 = neg_grid.ising_calc(x, y, beta);
+        // diff += pos_grid.couple_step(neg_grid, rand_num, pos_grid.ising_calc(x, y, beta), neg_grid.ising_calc(x, y, beta), x, y);
+    
+        if flag <= calc1 && flag <= calc2 {
+            if pos_grid.elements[(x*y) as usize] == neg_grid.elements[(x*y) as usize] {
+                pos_grid.elements[(x*y) as usize] = true;
+                neg_grid.elements[(x*y) as usize] = true;
+            }
+            else {
+                pos_grid.elements[(x*y) as usize] = true;
+                neg_grid.elements[(x*y) as usize] = true;
+                diff -= 1;
+            }
+        }
+        else if flag > calc1 && flag > calc2 {
+            if pos_grid.elements[(x*y) as usize] == neg_grid.elements[(x*y) as usize] {
+                pos_grid.elements[(x*y) as usize] = false;
+                neg_grid.elements[(x*y) as usize] = false;
+            }
+            else {
+                pos_grid.elements[(x*y) as usize] = false;
+                neg_grid.elements[(x*y) as usize] = false;
+                diff -= 1;
+            }
+        }
+        else if flag <= calc1 && flag > calc2 {
+            if pos_grid.elements[(x*y) as usize] == neg_grid.elements[(x*y) as usize] {
+                pos_grid.elements[(x*y) as usize] = true;
+                neg_grid.elements[(x*y) as usize] = false;
+                diff += 1;
+            }
+            else {
+                pos_grid.elements[(x*y) as usize] = true;
+                neg_grid.elements[(x*y) as usize] = false;
+            }
+        }
+        else {
+            if pos_grid.elements[(x*y) as usize] == neg_grid.elements[(x*y) as usize] {
+                pos_grid.elements[(x*y) as usize] = false;
+                neg_grid.elements[(x*y) as usize] = true;
+                diff += 1;
+            }
+            else {
+                pos_grid.elements[(x*y) as usize] = false;
+                neg_grid.elements[(x*y) as usize] = true;
+            }
+        }
+        num_steps += 1;
     }
 
+    println!("{}", num_steps);
 
 }
