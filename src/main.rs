@@ -16,7 +16,7 @@ impl Row {
         }    
     }
 
-    fn ising_calc(&mut self, x: i32, y: i32, beta: f32) -> f64{
+    fn ising_calc(&mut self, x: i32, y: i32, beta: f32, arr_size: i32) -> f64{
         // check neighbors and run Ising calculation
         let mut num_pos: i32 = 0;
         let mut num_neg: i32 = 0;
@@ -24,16 +24,18 @@ impl Row {
         // CHECK HORIZONTAL NEIGHBORS
         if y>0 {
             // if grid[x][y-1] == POS
-            if self.elements[(x*y-1) as usize] == true {
+            // println!("current index: {}", x*y-1);
+            // println!("value: {}", self.elements[(arr_size*x+y-1) as usize]);
+            if self.elements[(arr_size*x+y-1) as usize] == true {
                 num_pos += 1;
             }
             else {
                 num_neg += 1;
             }
         }
-        if y < self.elements.len().try_into().unwrap() {
+        if y < (arr_size - 1) {
             // if grid[x][y+1] == POS
-            if self.elements[(x*y+1) as usize] == true {
+            if self.elements[(arr_size*x+y+1) as usize] == true {
                 num_pos += 1;
             }
             else {
@@ -43,16 +45,16 @@ impl Row {
         // CHECK VERTICAL NEIGHBORS
         if x>0 {
             // if grid[x-1][y] == POS
-            if self.elements[((x-1)*y) as usize] == true {
+            if self.elements[(arr_size*(x-1)+y) as usize] == true {
                 num_pos += 1;
             }
             else {
                 num_neg += 1;
             }
         }
-        if x < self.elements.len().try_into().unwrap() {
+        if x < (arr_size - 1) {
             // if grid[x+1][y] == POS
-            if self.elements[((x+1)*y) as usize] == true {
+            if self.elements[(arr_size*(x+1)+y) as usize] == true {
                 num_pos += 1;
             }
             else {
@@ -71,7 +73,7 @@ impl Row {
 fn main() {
     let mut rng = rand::thread_rng();
     let arr_size: i32 = 10;
-    let beta: f32 = 0.5;
+    let beta: f32 = 0.1;
     let mut x: i32;
     let mut y: i32;
 
@@ -97,10 +99,10 @@ fn main() {
         x = rng.gen_range(0..(arr_size));
         y = rng.gen_range(0..(arr_size));
 
-        println!("x: {}; y: {}", x, y);
+        // println!("x: {}; y: {}", x, y);
 
-        calc1 = pos_grid.ising_calc(x, y, beta);
-        calc2 = neg_grid.ising_calc(x, y, beta);
+        calc1 = pos_grid.ising_calc(x, y, beta, arr_size);
+        calc2 = neg_grid.ising_calc(x, y, beta, arr_size);
         // diff += pos_grid.couple_step(neg_grid, rand_num, pos_grid.ising_calc(x, y, beta), neg_grid.ising_calc(x, y, beta), x, y);
     
         if flag <= calc1 && flag <= calc2 {
@@ -148,6 +150,7 @@ fn main() {
             }
         }
         num_steps += 1;
+        println!("diff: {}", diff);
     }
 
     println!("{}", num_steps);
