@@ -106,51 +106,51 @@ fn main() {
         // diff += pos_grid.couple_step(neg_grid, rand_num, pos_grid.ising_calc(x, y, beta), neg_grid.ising_calc(x, y, beta), x, y);
     
         if flag <= calc1 && flag <= calc2 {
-            if pos_grid.elements[(x*y) as usize] == neg_grid.elements[(x*y) as usize] {
-                pos_grid.elements[(x*y) as usize] = true;
-                neg_grid.elements[(x*y) as usize] = true;
+            if pos_grid.elements[(arr_size*x+y) as usize] == neg_grid.elements[(arr_size*x+y) as usize] {
+                pos_grid.elements[(arr_size*x+y) as usize] = true;
+                neg_grid.elements[(arr_size*x+y) as usize] = true;
             }
             else {
-                pos_grid.elements[(x*y) as usize] = true;
-                neg_grid.elements[(x*y) as usize] = true;
+                pos_grid.elements[(arr_size*x+y) as usize] = true;
+                neg_grid.elements[(arr_size*x+y) as usize] = true;
                 diff -= 1;
             }
         }
         else if flag > calc1 && flag > calc2 {
-            if pos_grid.elements[(x*y) as usize] == neg_grid.elements[(x*y) as usize] {
-                pos_grid.elements[(x*y) as usize] = false;
-                neg_grid.elements[(x*y) as usize] = false;
+            if pos_grid.elements[(arr_size*x+y) as usize] == neg_grid.elements[(arr_size*x+y) as usize] {
+                pos_grid.elements[(arr_size*x+y) as usize] = false;
+                neg_grid.elements[(arr_size*x+y) as usize] = false;
             }
             else {
-                pos_grid.elements[(x*y) as usize] = false;
-                neg_grid.elements[(x*y) as usize] = false;
+                pos_grid.elements[(arr_size*x+y) as usize] = false;
+                neg_grid.elements[(arr_size*x+y) as usize] = false;
                 diff -= 1;
             }
         }
         else if flag <= calc1 && flag > calc2 {
-            if pos_grid.elements[(x*y) as usize] == neg_grid.elements[(x*y) as usize] {
-                pos_grid.elements[(x*y) as usize] = true;
-                neg_grid.elements[(x*y) as usize] = false;
+            if pos_grid.elements[(arr_size*x+y) as usize] == neg_grid.elements[(arr_size*x+y) as usize] {
+                pos_grid.elements[(arr_size*x+y) as usize] = true;
+                neg_grid.elements[(arr_size*x+y) as usize] = false;
                 diff += 1;
             }
             else {
-                pos_grid.elements[(x*y) as usize] = true;
-                neg_grid.elements[(x*y) as usize] = false;
+                pos_grid.elements[(arr_size*x+y) as usize] = true;
+                neg_grid.elements[(arr_size*x+y) as usize] = false;
             }
         }
         else {
-            if pos_grid.elements[(x*y) as usize] == neg_grid.elements[(x*y) as usize] {
-                pos_grid.elements[(x*y) as usize] = false;
-                neg_grid.elements[(x*y) as usize] = true;
+            if pos_grid.elements[(arr_size*x+y) as usize] == neg_grid.elements[(arr_size*x+y) as usize] {
+                pos_grid.elements[(arr_size*x+y) as usize] = false;
+                neg_grid.elements[(arr_size*x+y) as usize] = true;
                 diff += 1;
             }
             else {
-                pos_grid.elements[(x*y) as usize] = false;
-                neg_grid.elements[(x*y) as usize] = true;
+                pos_grid.elements[(arr_size*x+y) as usize] = false;
+                neg_grid.elements[(arr_size*x+y) as usize] = true;
             }
         }
         num_steps += 1;
-        println!("diff: {}", diff);
+        // println!("diff: {}", diff);
     }
 
     println!("{}", num_steps);
